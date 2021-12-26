@@ -1,0 +1,97 @@
+import os
+import re
+import os.path
+print("Welcome to the registration and login portal")
+
+def mail(email):
+  regex=r'\b[A-Za-z._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+  valid=re.fullmatch(regex,email)
+  file_exists = os.path.exists('myfile1.txt')
+  test=None
+  if(file_exists):
+    data = open("myfile.txt", "r")
+    content=data.read()
+    test=re.search(email,content)
+  if(valid and test==None or file_exists==False):
+    return True
+  elif(test!=None):
+    print("Email already exists")
+  else:
+    print("Please enter valid email")
+    return False
+
+
+def validatepassword(password):
+    SpecialSym="[$&+,:;=?@#|'<>.-^*()%!]']"
+    val=True
+    if(len(password)<6):
+      print("Password length must be greater than 6")
+      val=False
+    elif(len(password)>16):
+      print("Password length must be less than 20")
+      val=False
+    elif not any(char.isdigit for char in password):
+      print("Password must contain atleast one digit")
+      val=False
+    elif not any(char.isupper() for char in password):
+      print("Password should have at least one uppercase letter")
+      val=False
+    elif not any(char.islower() for char in password):
+      print("Password should have at least one lowercase letter")
+      val=False
+    elif not any(char in SpecialSym for char in password):
+      print("Password should have at least one of the symbols")
+      val=False
+    return val
+
+
+def Register():
+  email=input("Please enter the email: ")
+  password=input("Please enter password: ")
+  if (mail(email) and validatepassword(password)) :
+    file1 = open("myfile.txt", "a")
+    file1.write("email:{},password:{}\n".format(email,password))
+    file1.close()
+    print("You have been registered successfully")
+def Login():
+  email=input("enter email: ")
+  password=input("enter password: ")
+  data = open("myfile.txt", "r")
+  content=data.read()
+  #test=re.search(email,content)
+  #test2=re.search(password,content)
+  content=content.split("\n")
+  for item in content:
+    if(re.search("email:{}".format(email),item) and re.search("password:{}".format(password),item)):
+      print("you have logged in")
+      break
+    else:
+      continue
+  print("Invalid username or password. If you have not registered, please register")
+
+
+def forgotpassword(mailid):
+  data = open("myfile.txt", "r")
+  content=data.read()
+  content=content.split("\n")
+  for item in content:
+    if(re.search("email:{}".format(mailid),item)):
+      return "your credentials are: {}".format(item)
+    else:
+      continue
+  return "invalid username, please register"
+
+
+print("1.Register\n2.Login\n3.Forgot Password\nPlease enter any option")
+option=input()
+if(option=="1" or option.lower()=="register"):
+  print("")
+  Register()
+elif(option=="2" or option.lower()=="login"):
+  Login()
+elif(option=="3" or option.lower()=="forgot password" or option.lower=="forgotpassword"):
+  mailid=input("please provide username : ")
+  userpassword=forgotpassword(mailid)
+  print(userpassword)
+else:
+  print("enter valid option")
